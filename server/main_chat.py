@@ -23,7 +23,7 @@ while True:
     conversation_recording = output_wav_path = Path("audio") / "conversation.wav"
     conversation_recording.parent.mkdir(parents=True, exist_ok=True)
 
-    user_spoken_text = record_and_transcribe(whisper_model, conversation_recording)
+    user_spoken_text = record_and_transcribe(whisper_model, conversation_recording, input_wav_path="character_files/main_sample.wav")
 
     ### pass to LLM and get a LLM output.
 
