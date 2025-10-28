@@ -39,4 +39,4 @@ def progress():
     return jsonify({'messages': messages})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)
+    app.run(port=8000)
