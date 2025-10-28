@@ -1,4 +1,4 @@
-numpy<2.0
+numpy>=2.0
 scipy
 tensorboard
 librosa==0.10.2
@@ -44,4 +44,4 @@ tokenizers>=0.13,<1
 av>=11
 tqdm
 pytube
-moviepy
+Flask
