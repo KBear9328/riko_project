@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Playlist Audio Downloader</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        #progress {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 500px;
+            height: 300px;
+            overflow-y: scroll;
+            text-align: left;
+            white-space: pre-wrap;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Playlist Audio Downloader</h1>
+        <form id="download-form">
+            <input type="text" id="playlist-url" placeholder="Enter Playlist URL" size="50" required>
+            <input type="text" id="output-dir" placeholder="Enter Output Directory (e.g., C:/Users/YourUser/Music)" size="50" required>
+            <button type="submit">Download</button>
+        </form>
+        <div id="progress"></div>
+    </div>
+    <script>
+        document.getElementById('download-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const playlistUrl = document.getElementById('playlist-url').value;
+            const outputDir = document.getElementById('output-dir').value;
+            const progressDiv = document.getElementById('progress');
+
+            progressDiv.innerHTML = 'Starting download...';
+
+            const response = await fetch('/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    playlist_url: playlistUrl,
+                    output_dir: outputDir
+                })
+            });
+
+            const data = await response.json();
+            if (data.error) {
+                progressDiv.innerHTML = `Error: ${data.error}`;
+                return;
+            }
+
+            const interval = setInterval(async () => {
+                const progressResponse = await fetch('/progress');
+                const progressData = await progressResponse.json();
+                const messages = progressData.messages;
+
+                if (messages.length > 0) {
+                    messages.forEach(msg => {
+                        progressDiv.innerHTML += `\n${msg}`;
+                    });
+                    progressDiv.scrollTop = progressDiv.scrollHeight;
+                }
+
+                if (progressDiv.innerHTML.includes("--- Download complete! ---")) {
+                    clearInterval(interval);
+                }
+            }, 2000); // Poll every 2 seconds
+        });
+    </script>
+</body>
+</html>
